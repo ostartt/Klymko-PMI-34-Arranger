@@ -1,7 +1,7 @@
 package com.arranger.eurekaclient.entity;
 
 
-import com.micro.demo.eurekaclient.validator.PermutationConstraint;
+import com.arranger.eurekaclient.validator.PermutationConstraint;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

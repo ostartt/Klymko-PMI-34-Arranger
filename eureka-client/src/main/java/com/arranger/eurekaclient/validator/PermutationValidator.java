@@ -1,4 +1,4 @@
-package com.micro.demo.eurekaclient.validator;
+package com.arranger.eurekaclient.validator;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

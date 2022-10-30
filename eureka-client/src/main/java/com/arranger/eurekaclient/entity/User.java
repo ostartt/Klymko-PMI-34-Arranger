@@ -1,7 +1,7 @@
 package com.arranger.eurekaclient.entity;
 
-import com.micro.demo.eurekaclient.validator.EmailConstraint;
-import com.micro.demo.eurekaclient.validator.NameConstraint;
+import com.arranger.eurekaclient.validator.EmailConstraint;
+import com.arranger.eurekaclient.validator.NameConstraint;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

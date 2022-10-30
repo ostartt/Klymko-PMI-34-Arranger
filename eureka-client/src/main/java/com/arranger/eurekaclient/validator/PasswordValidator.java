@@ -1,4 +1,4 @@
-package com.micro.demo.eurekaclient.validator;
+package com.arranger.eurekaclient.validator;
 
 import org.springframework.stereotype.Service;
 
