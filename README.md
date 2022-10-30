@@ -1,2 +1,2 @@
 # Klymko-PMI-34-Arranger
-Web load balancer to calculate combinations, permutations and arrangements
+Web load balancer to get permutations of a given string
