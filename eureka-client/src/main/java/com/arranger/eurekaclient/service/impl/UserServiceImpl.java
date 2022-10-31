@@ -7,6 +7,7 @@ import com.arranger.eurekaclient.mapper.UserMapper;
 import com.arranger.eurekaclient.repository.UserRepository;
 import com.arranger.eurekaclient.security.PasswordConfig;
 import com.arranger.eurekaclient.service.ConfirmationTokenService;
+import com.arranger.eurekaclient.service.EmailSenderService;
 import com.arranger.eurekaclient.service.UserService;
 import com.arranger.eurekaclient.validator.PasswordValidator;
 import com.google.common.io.Files;
@@ -29,16 +30,11 @@ import java.util.UUID;
 @Slf4j
 public class UserServiceImpl implements UserService {
     private final static String EMAIL_ALREADY_TAKEN = "Service: email %s already taken";
-    private final static String EMAIL_SERVER = "@gmail.com"; // TODO : create smtp
-
     private final UserRepository userRepository;
     private final PasswordConfig passwordConfig;
     private final UserMapper userMapper;
 
     private final ConfirmationTokenService confirmationTokenService;
-    private final PasswordValidator passwordValidator;
-
-    private final EmailSenderService emailSender;
 
     @Override
     public String signUpUser(UserDTO userDTO) {
@@ -92,21 +88,4 @@ public class UserServiceImpl implements UserService {
                 .findByEmail(email)
                 .orElseThrow(EntityNotFoundException::new);
     }
-
-    private String buildConfirmEmail(String link) throws IOException {
-        String date = "\n" + LocalDateTime.now().getMonth().getDisplayName(TextStyle.FULL, Locale.US)
-            + " " + LocalDateTime.now().getDayOfMonth()
-            + ", " + LocalDateTime.now().getYear();
-
-        StringBuilder email = new StringBuilder(Files
-            .asCharSource(new File("src/main/resources/templates/checkEmail.html"), StandardCharsets.UTF_8)
-            .read());
-
-        email
-            .insert(email.indexOf("password") + 8, date)
-            .insert(email.indexOf("href=\"\"") + 6, link);
-
-        return email.toString();
-    }
-
 }
