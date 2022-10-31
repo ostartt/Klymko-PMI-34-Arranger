@@ -1,16 +1,17 @@
 package com.arranger.eurekaclient.service.impl;
 
 import com.arranger.eurekaclient.dto.UserDTO;
+import com.arranger.eurekaclient.entity.ConfirmationToken;
 import com.arranger.eurekaclient.entity.User;
 import com.arranger.eurekaclient.mapper.UserMapper;
 import com.arranger.eurekaclient.repository.UserRepository;
 import com.arranger.eurekaclient.security.PasswordConfig;
+import com.arranger.eurekaclient.service.ConfirmationTokenService;
 import com.arranger.eurekaclient.service.UserService;
 import com.arranger.eurekaclient.validator.PasswordValidator;
 import com.google.common.io.Files;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.snowflake.client.jdbc.internal.google.protobuf.ServiceException;
 import org.springframework.stereotype.Service;
 
 import javax.mail.SendFailedException;
@@ -21,7 +22,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.TextStyle;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -109,9 +109,4 @@ public class UserServiceImpl implements UserService {
         return email.toString();
     }
 
-    @Override
-    public UserDTO getUser(User oldUser) {
-        User user = userRepository.getReferenceById(oldUser.getId());
-        return userMapper.entityToDto(user);
-    }
 }

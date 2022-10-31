@@ -10,7 +10,4 @@ public interface UserService {
     void enableUser(String email);
 
     User findUserByEmail(String email);
-
-    UserDTO getUser(User user);
-
 }
