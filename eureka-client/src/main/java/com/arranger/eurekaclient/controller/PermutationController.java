@@ -7,6 +7,7 @@ import com.arranger.eurekaclient.service.PermutationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -25,7 +26,7 @@ public class PermutationController {
     }
 
     @PostMapping
-//    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<CompletableFuture<LogsDTO>>
     runAndLogPermutation(@RequestBody @Valid PermutationSaveDTO permutation) throws InterruptedException {
         log.info("Running a permutation");
@@ -36,7 +37,7 @@ public class PermutationController {
     }
 
     @GetMapping("/{id}")
-    //    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<PermutationDTO>
     getPermutationById(@PathVariable("id") String permutationId) {
 
@@ -46,7 +47,7 @@ public class PermutationController {
     }
 
     @PutMapping("/{id}")
-    //    @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
     public ResponseEntity<Void>
     cancelTask(@PathVariable("id") String logsId) {
         log.info("Cancelling a task with id {}", logsId);

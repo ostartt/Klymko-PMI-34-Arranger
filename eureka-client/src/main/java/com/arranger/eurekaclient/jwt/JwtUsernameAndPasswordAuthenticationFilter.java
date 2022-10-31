@@ -3,6 +3,7 @@ package com.arranger.eurekaclient.jwt;
 import com.arranger.eurekaclient.dto.AuthenticationRequestDTO;
 import com.arranger.eurekaclient.dto.AuthenticationResponseDTO;
 import com.arranger.eurekaclient.entity.User;
+import com.arranger.eurekaclient.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import net.snowflake.client.jdbc.internal.google.gson.Gson;

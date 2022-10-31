@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,7 +27,7 @@ public class LogsController {
     }
 
     @GetMapping("/{id}/permutations")
-    //    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<LogsDTO>
     getLogsByPermutationId(@PathVariable("id") String permutationId) {
 
@@ -36,7 +37,7 @@ public class LogsController {
     }
 
     @GetMapping("/{id}")
-    //    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<LogsDTO>
     getLogsById(@PathVariable("id") String id) {
 
@@ -46,7 +47,7 @@ public class LogsController {
     }
 
     @GetMapping
-    //    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<List<LogsDTO>>
     getAllLogs(Pageable pageable) {
 
