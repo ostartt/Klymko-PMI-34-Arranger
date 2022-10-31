@@ -34,9 +34,7 @@ public class RegistrationServiceImpl implements RegistrationService {
             "Service: password %s must contain at least 8 characters (letters and numbers)";
 
     private final static String LOGIN_ROUTE = "<meta http-equiv=\"refresh\" content=\"0;" +
-            " url=https://ujp-sports-hub-ui.herokuapp.com/login\" />";
-    private final static String EMAIL_SERVER = "arrangerwebapp@gmail.com";
-
+            " url=https://arranger.herokuapp.com/login\" />";
     private final UserService userService;
     private final ConfirmationTokenService confirmationTokenServiceImpl;
     private final EmailSenderService emailSender;
@@ -46,7 +44,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     public String register(RegistrationRequestDTO request)
             throws IOException, SendFailedException {
 
-        log.info(String.format("Service: registering user with email %s", request.getEmail()));
+        log.info("Registering user with email {}", request.getEmail());
 
         boolean isValidPassword = passwordValidator.
                 test(request.getPassword());
@@ -65,7 +63,7 @@ public class RegistrationServiceImpl implements RegistrationService {
                         Role.USER)
         );
 
-        String link = "https://ujp-sports-hub.herokuapp.com/api/v1/registration/confirm?token=" + token;
+        String link = "http://localhost:8765/api/v1/sign-up/confirm?token=" + token;
 
         emailSender.send(
                 request.getEmail(),
@@ -77,7 +75,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Transactional
     @Override
     public String confirmToken(String token) {
-        log.info(String.format("Service: confirming token %s", token));
+        log.info("Confirming token {}", token);
         ConfirmationToken confirmationToken = confirmationTokenServiceImpl
                 .getToken(token)
                 .orElseThrow(() ->
@@ -108,11 +106,10 @@ public class RegistrationServiceImpl implements RegistrationService {
                 + ", " + LocalDateTime.now().getYear();
 
         StringBuilder email = new StringBuilder(Files
-                .asCharSource(new File("src/main/resources/templates/email.html"), StandardCharsets.UTF_8)
+                .asCharSource(new File("eureka-client/src/main/resources/template/email.html"), StandardCharsets.UTF_8)
                 .read());
 
         email
-                .insert(email.indexOf("Hub") + 3, date)
                 .insert(email.indexOf("href=\"\"") + 6, link);
 
         return email.toString();

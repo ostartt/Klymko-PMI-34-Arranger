@@ -51,6 +51,20 @@ public class LogsServiceImpl implements LogsService {
     }
 
     @Override
+    public List<LogsDTO> getAllLogsByUserId(Pageable pageable, String userId){
+        log.info("Getting all logs by user id {}", userId);
+
+        List<Logs> logs = logsRepository
+                .getLogsByUserId(userId, PageRequest.of(0,6))
+                .orElseThrow(EntityNotFoundException::new);
+
+        return logs
+                .stream()
+                .map(logsMapper::entityToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public LogsDTO getLogsById(String id) {
         log.info("Getting logs by id {}", id);
 

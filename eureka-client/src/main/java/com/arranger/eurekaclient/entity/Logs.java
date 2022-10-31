@@ -45,7 +45,8 @@ public class Logs {
     @JoinColumn(name = "permutation_id", nullable = true, foreignKey = @ForeignKey(name = "fk_logs_permutation"))
     private Permutation permutation;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(name = "fk_logs_user"))
     private User user;
+
 }

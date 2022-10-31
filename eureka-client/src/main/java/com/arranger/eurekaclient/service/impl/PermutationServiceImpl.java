@@ -6,10 +6,12 @@ import com.arranger.eurekaclient.dto.PermutationSaveDTO;
 import com.arranger.eurekaclient.entity.Logs;
 import com.arranger.eurekaclient.entity.Permutation;
 import com.arranger.eurekaclient.entity.PermutationStatus;
+import com.arranger.eurekaclient.entity.User;
 import com.arranger.eurekaclient.mapper.LogsMapper;
 import com.arranger.eurekaclient.mapper.PermutationMapper;
 import com.arranger.eurekaclient.repository.LogsRepository;
 import com.arranger.eurekaclient.repository.PermutationRepository;
+import com.arranger.eurekaclient.repository.UserRepository;
 import com.arranger.eurekaclient.service.PermutationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,7 @@ public class PermutationServiceImpl implements PermutationService {
     private final PermutationMapper permutationMapper;
     private final LogsRepository logsRepository;
     private final LogsMapper logsMapper;
+    private final UserRepository userRepository;
     private static final AtomicInteger maxProcessNumber = new AtomicInteger(1);
     private static final AtomicInteger processCounter = new AtomicInteger(0);
     private static final String maxProcessesMsg = String.format("You have reached max process number %s," +
@@ -47,11 +50,12 @@ public class PermutationServiceImpl implements PermutationService {
     public PermutationServiceImpl(PermutationRepository permutationRepository,
                                   PermutationMapper permutationMapper,
                                   LogsRepository logsRepository,
-                                  LogsMapper logsMapper) {
+                                  LogsMapper logsMapper, UserRepository userRepository) {
         this.permutationRepository = permutationRepository;
         this.permutationMapper = permutationMapper;
         this.logsRepository = logsRepository;
         this.logsMapper = logsMapper;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -97,6 +101,11 @@ public class PermutationServiceImpl implements PermutationService {
         permutation.setPermutationNumber(getNumberOfPermutations(permutationSaveDTO.getGivenString()));
 
         Logs logs = new Logs();
+        User user = userRepository
+                .findById(permutationSaveDTO.getUserId())
+                .orElseThrow(EntityNotFoundException::new);
+
+        logs.setUser(user);
         logs.setInstanceId(instanceId);
         logs.setPermutation(permutation);
 

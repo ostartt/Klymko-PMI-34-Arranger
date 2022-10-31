@@ -13,6 +13,7 @@ public class LogsDTO {
     private LocalDateTime shutDownTime;
     private Long executionTime;
     private String instanceId;
+    private String userId;
     private PermutationStatus permutationStatus;
     private PermutationDTO permutation;
 }

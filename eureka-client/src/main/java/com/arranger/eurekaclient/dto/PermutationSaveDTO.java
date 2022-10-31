@@ -11,4 +11,7 @@ public class PermutationSaveDTO {
     @NotNull
     @PermutationConstraint
     String givenString;
+
+    @NotNull
+    String userId;
 }

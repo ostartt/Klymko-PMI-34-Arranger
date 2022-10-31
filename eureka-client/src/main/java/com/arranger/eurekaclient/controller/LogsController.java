@@ -55,4 +55,14 @@ public class LogsController {
         return ResponseEntity.status(HttpStatus.OK).body(
                 logsService.getAllLogs(pageable));
     }
+
+    @GetMapping("/{id}/users")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    public ResponseEntity<List<LogsDTO>>
+    getAllLogsByUserId(@PathVariable("id") String userId, Pageable pageable) {
+
+        log.info("Getting all logs by user id {}", userId);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                logsService.getAllLogsByUserId(pageable, userId));
+    }
 }
