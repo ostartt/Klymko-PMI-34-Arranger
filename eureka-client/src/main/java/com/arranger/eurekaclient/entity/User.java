@@ -58,8 +58,8 @@ public class User {
     @Column(name="update_date_time")
     private LocalDateTime updateDateTime;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.REMOVE)
-    @EqualsAndHashCode.Exclude
-    private List<Logs> logs;
+//    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.REMOVE)
+//    @EqualsAndHashCode.Exclude
+//    private List<Logs> logs;
 
 }

@@ -45,7 +45,7 @@ public class Logs {
     @JoinColumn(name = "permutation_id", nullable = true, foreignKey = @ForeignKey(name = "fk_logs_permutation"))
     private Permutation permutation;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(name = "fk_logs_user"))
-    private User user;
+//    @ManyToOne
+//    @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(name = "fk_logs_user"))
+//    private User user;
 }
