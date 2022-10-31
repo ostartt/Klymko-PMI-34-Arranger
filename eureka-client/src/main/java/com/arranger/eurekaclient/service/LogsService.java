@@ -10,5 +10,7 @@ public interface LogsService {
 
     List<LogsDTO> getAllLogs(Pageable pageable);
 
+    List<LogsDTO> getAllLogsByUserId(Pageable pageable, String userId);
+
     LogsDTO getLogsById(String id);
 }

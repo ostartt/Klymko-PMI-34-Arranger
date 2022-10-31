@@ -49,16 +49,17 @@ public class User {
     private String password;
 
     @Column(name="is_active")
-    private Boolean isActive;
+    private Boolean isActive = false;
 
     @CreatedDate
     @Column(name="create_date_time",  nullable=false)
     private LocalDateTime createDateTime;
+
     @LastModifiedDate
     @Column(name="update_date_time")
     private LocalDateTime updateDateTime;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.REMOVE)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
     @EqualsAndHashCode.Exclude
     private List<Logs> logs;
 
