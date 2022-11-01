@@ -1,4 +1,4 @@
-rootProject.name = 'spring-arranger'
+rootProject.name = 'Arranger'
 
 includeBuild 'eureka-server'
 includeBuild 'eureka-client'
