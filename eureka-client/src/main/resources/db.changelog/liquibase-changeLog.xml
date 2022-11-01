@@ -138,7 +138,7 @@
             <column name="first_name" value="John"/>
             <column name="is_active" value="true"/>
             <column name="last_name" value="Smith"/>
-            <column name="password" value=""/>
+            <column name="password" value="$2y$10$cecPmiqbFUuKbyi1kF56T.xgg1wT6JxV9wFPwsNx2HX7sWPVnvUj2"/>
             <column name="role" value="ADMIN"/>
             <column name="update_date_time"/>
         </insert>
@@ -151,7 +151,7 @@
             <column name="first_name" value="Max"/>
             <column name="is_active" value="true"/>
             <column name="last_name" value="Stone"/>
-            <column name="password" value=""/>
+            <column name="password" value="$2y$10$F2JExRIjs3ODTjfGNB95S.en90uYxwPfr5mVeKybIFrfJq/mM1GRC"/>
             <column name="role" value="ADMIN"/>
             <column name="update_date_time"/>
         </insert>
