@@ -1,2 +1,2 @@
 release: ./mvnw liquibase:update
-web: java $JAVA_OPTS -Dserver.port=$PORT -jar target/Arranger-1.0-SNAPSHOT.jar
+web: java -Dserver.port=$PORT $JAVA_OPTS -jar build/libs/Arranger-0.0.1-SNAPSHOT.jar
