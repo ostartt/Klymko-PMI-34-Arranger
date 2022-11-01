@@ -2,5 +2,7 @@
 <project version="4">
   <component name="JpaBuddyIdeaProjectConfig">
     <option name="defaultUnitInitialized" value="true" />
+    <option name="renamerInitialized" value="true" />
+    <option name="snapshotDbValue" value="73571cc9-c1fa-44d7-835f-af9c8e8a0cee" />
   </component>
 </project>
