@@ -1,0 +1,159 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.13.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="Ostap Klymko" id="1667290460501-1">
+        <createTable tableName="users">
+            <column name="id" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="users_pkey"/>
+            </column>
+            <column name="create_date_time" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="first_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_active" type="BOOLEAN"/>
+            <column name="last_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date_time" type="TIMESTAMP WITHOUT TIME ZONE"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Ostap Klymko" id="1667290460501-2">
+        <createTable tableName="users_logs">
+            <column name="user_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="logs_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Ostap Klymko" id="1667290460501-3">
+        <createIndex indexName="user_email_idx" tableName="users">
+            <column name="email"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Ostap Klymko" id="1667290460501-4">
+        <addUniqueConstraint columnNames="email" constraintName="uk_users_email" tableName="users"/>
+    </changeSet>
+    <changeSet author="Ostap Klymko" id="1667290460501-5">
+        <addUniqueConstraint columnNames="logs_id" constraintName="uk_users_logs"
+                             tableName="users_logs"/>
+    </changeSet>
+    <changeSet author="Ostap Klymko" id="1667290460501-6">
+        <createTable tableName="confirmation_token">
+            <column name="id" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="confirmation_token_pkey"/>
+            </column>
+            <column name="confirmed_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="created_at" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expires_at" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="token" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="app_user_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Ostap Klymko" id="1667290460501-7">
+        <createTable tableName="logs">
+            <column name="id" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="logs_pkey"/>
+            </column>
+            <column name="execution_time" type="BIGINT"/>
+            <column name="instance_id" type="VARCHAR(255)"/>
+            <column name="status" type="VARCHAR(255)"/>
+            <column name="shut_down_time" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="start_up_time" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="permutation_id" type="VARCHAR(255)"/>
+            <column name="user_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Ostap Klymko" id="1667290460501-8">
+        <createTable tableName="permutation">
+            <column name="id" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="permutation_pkey"/>
+            </column>
+            <column name="given_string" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="permutation_number" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Ostap Klymko" id="1667290460501-9">
+        <createTable tableName="permutation_list">
+            <column name="permutation_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="permutations" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Ostap Klymko" id="1667290460501-10">
+        <addForeignKeyConstraint baseColumnNames="app_user_id" baseTableName="confirmation_token"
+                                 constraintName="fk_user_token" deferrable="false"
+                                 initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="users"/>
+    </changeSet>
+    <changeSet author="Ostap Klymko" id="1667290460501-11">
+        <addForeignKeyConstraint baseColumnNames="permutation_id" baseTableName="permutation_list"
+                                 constraintName="fk_permutation_list" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="permutation"/>
+    </changeSet>
+    <changeSet author="Ostap Klymko" id="1667290460501-12">
+        <addForeignKeyConstraint baseColumnNames="permutation_id" baseTableName="logs"
+                                 constraintName="fk_logs_permutation" deferrable="false" initiallyDeferred="false"
+                                 onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id"
+                                 referencedTableName="permutation"/>
+    </changeSet>
+    <changeSet author="Ostap Klymko" id="1667290460501-13">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="logs" constraintName="fk_logs_user"
+                                 deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="users"/>
+    </changeSet>
+    <changeSet author="Ostap Klymko" id="1659358419959-1">
+        <insert tableName="users">
+            <column name="id" value="40289fc882a61e440182a649d3480000"/>
+            <column name="create_date_time" valueDate="2022-08-16 13:53:52.306598"/>
+            <column name="email" value="johnsmith@gmail.com"/>
+            <column name="first_name" value="John"/>
+            <column name="is_active" value="true"/>
+            <column name="last_name" value="Smith"/>
+            <column name="password" value=""/>
+            <column name="role" value="ADMIN"/>
+            <column name="update_date_time"/>
+        </insert>
+    </changeSet>
+    <changeSet author="Ostap Klymko" id="1659358419959-2">
+        <insert tableName="users">
+            <column name="id" value="ce633966-7fa1-4367-88ed-44e7e33bf738"/>
+            <column name="create_date_time" valueDate="2022-08-16 13:53:52.306598"/>
+            <column name="email" value="maxstone@gmail.com"/>
+            <column name="first_name" value="Max"/>
+            <column name="is_active" value="true"/>
+            <column name="last_name" value="Stone"/>
+            <column name="password" value=""/>
+            <column name="role" value="ADMIN"/>
+            <column name="update_date_time"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
