@@ -2,7 +2,10 @@ plugins {
     id 'org.springframework.boot' version '2.7.5'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
     id 'java'
+    id 'org.liquibase.gradle' version '2.0.4'
 }
+
+apply plugin: 'org.liquibase.gradle'
 
 group = 'com.arranger'
 version = '0.0.1-SNAPSHOT'
@@ -39,6 +42,19 @@ dependencies {
     compileOnly group: 'net.snowflake', name: 'snowflake-jdbc', version: '3.9.2'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.liquibase:liquibase-core'
+    liquibaseRuntime 'org.liquibase:liquibase-core:4.2.2'
+    liquibaseRuntime 'org.liquibase:liquibase-groovy-dsl:3.0.2'
+    liquibaseRuntime 'mysql:mysql-connector-java:8.0.30'
+}
+
+liquibase {
+    activities {
+        main {
+            url "postgres://xpugqhqurtfuuv:7c562fafe7602b58e25eabd6d3e84fb7a3e456074e4f6b58995b1ca67e44bc4f@ec2-52-19-188-149.eu-west-1.compute.amazonaws.com:5432/ddm8sbn0pfgtlb"
+            username "postgres"
+            password "postgres"
+        }
+    }
 }
 
 dependencyManagement {
