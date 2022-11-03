@@ -16,7 +16,6 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/logs")
-@CrossOrigin(origins = "*")
 public class LogsController {
 
     private final LogsService logsService;
