@@ -3,6 +3,7 @@ package com.arranger.eurekaclient.service.impl;
 import com.arranger.eurekaclient.dto.UserDTO;
 import com.arranger.eurekaclient.entity.ConfirmationToken;
 import com.arranger.eurekaclient.entity.User;
+import com.arranger.eurekaclient.exception.EmailAlreadyTakenException;
 import com.arranger.eurekaclient.mapper.UserMapper;
 import com.arranger.eurekaclient.repository.UserRepository;
 import com.arranger.eurekaclient.security.PasswordConfig;
@@ -29,7 +30,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Slf4j
 public class UserServiceImpl implements UserService {
-    private final static String EMAIL_ALREADY_TAKEN = "Service: email %s already taken";
+    private final static String EMAIL_ALREADY_TAKEN = "Email %s already taken";
     private final UserRepository userRepository;
     private final PasswordConfig passwordConfig;
     private final UserMapper userMapper;
@@ -48,7 +49,7 @@ public class UserServiceImpl implements UserService {
 
         if (userExists) {
             log.error(String.format(EMAIL_ALREADY_TAKEN, userDTO.getEmail()));
-            throw new IllegalArgumentException(EMAIL_ALREADY_TAKEN);
+            throw new EmailAlreadyTakenException(String.format(EMAIL_ALREADY_TAKEN, userDTO.getEmail()), userDTO);
         }
 
         String encodedPassword = passwordConfig.passwordEncoder()
@@ -57,7 +58,7 @@ public class UserServiceImpl implements UserService {
         user.setPassword(encodedPassword);
         user.setCreateDateTime(LocalDateTime.now());
 
-        log.info(String.format("Service: saving user with the email %s", userDTO.getEmail()));
+        log.info(String.format("saving user with the email %s", userDTO.getEmail()));
         userRepository.save(user);
 
         String token = UUID.randomUUID().toString();

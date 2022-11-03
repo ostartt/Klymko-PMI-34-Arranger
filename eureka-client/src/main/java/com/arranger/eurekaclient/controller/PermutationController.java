@@ -16,7 +16,6 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/permutations")
-@CrossOrigin(origins = "*")
 public class PermutationController {
 
     private final PermutationService permutationService;
