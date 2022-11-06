@@ -72,14 +72,7 @@ public class PermutationServiceImpl implements PermutationService {
         log.info("Decrementing from cancel");
         processCounter.decrementAndGet();
 
-        Server server = serverRepository
-                .findById(instanceId)
-                .orElseThrow(EntityNotFoundException::new);
-
-        server.setTasksRun(processCounter.get());
-        server.setAvailableTasks(maxProcessNumber.get() - processCounter.get());
-        server.setLoadPercent((processCounter.get() / maxProcessNumber.get()) * 100);
-        serverRepository.save(server);
+//        saveServer();
 
         return CompletableFuture.runAsync(() -> logsRepository
                 .findById(logsId)
@@ -121,15 +114,7 @@ public class PermutationServiceImpl implements PermutationService {
                 .findById(permutationSaveDTO.getUserId())
                 .orElseThrow(EntityNotFoundException::new);
 
-//        Server server = serverRepository
-//                .findById(instanceId)
-//                .orElseThrow(EntityNotFoundException::new);
-//
-//        server.setTasksRun(processCounter.get());
-//        server.setAvailableTasks(maxProcessNumber.get() - processCounter.get());
-//        server.setLoadPercent((processCounter.get() / maxProcessNumber.get()) * 100);
-
-//        serverRepository.save(server);
+        saveServer();
 
         logs.setUser(user);
         logs.setInstanceId(instanceId);
@@ -151,15 +136,12 @@ public class PermutationServiceImpl implements PermutationService {
 
                     logs.setShutDownTime(stop);
                     logs.setExecutionTime(executionTime);
-                    logs.setPermutationStatus(PermutationStatus.DONE); // TODO:
+                    logs.setPermutationStatus(PermutationStatus.DONE);
 
                     log.info("Decrementing");
                     processCounter.decrementAndGet();
 
-//                    server.setTasksRun(processCounter.get());
-//                    server.setAvailableTasks(maxProcessNumber.get() - processCounter.get());
-//                    server.setLoadPercent((processCounter.get() / maxProcessNumber.get()) * 100);
-//                    serverRepository.save(server);
+                     saveServer();
 
                     return logsMapper.entityToDto(logsRepository.save(logs));
                 });
@@ -183,6 +165,20 @@ public class PermutationServiceImpl implements PermutationService {
                 .orElseThrow(EntityNotFoundException::new));
     }
 
+    private void saveServer(){
+        log.info("Updating a server");
+
+        Integer availableTasks = maxProcessNumber.get() - processCounter.get();
+        String  loadPercent = ((processCounter.get() * 1.0 / maxProcessNumber.get()) * 100.0) + "%";
+
+        serverRepository.save(new Server(
+                instanceId,
+                maxProcessNumber.get(),
+                availableTasks,
+                processCounter.get(),
+                loadPercent
+        ));
+    }
     private Long getNumberOfPermutations(String givenString) {
         log.debug("Calling permutation number algorithm");
         return LongStream.rangeClosed(1, givenString.length())

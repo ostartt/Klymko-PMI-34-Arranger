@@ -13,5 +13,5 @@ public class ServerDTO implements Serializable {
     private Integer taskNumber;
     private Integer availableTasks;
     private Integer tasksRun;
-    private Integer loadPercent;
+    private String loadPercent;
 }
