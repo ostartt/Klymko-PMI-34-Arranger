@@ -90,7 +90,8 @@ public class PermutationServiceImpl implements PermutationService {
 
     @Override
     @Async
-    public CompletableFuture<LogsDTO> runAndLogPermutation(PermutationSaveDTO permutationSaveDTO) {
+    public CompletableFuture<LogsDTO> runAndLogPermutation(PermutationSaveDTO permutationSaveDTO,
+                                                           String userEmail) {
 
         if (processCounter.get() >= maxProcessNumber.get()) {
             log.error(maxProcessesMsg);
@@ -109,7 +110,7 @@ public class PermutationServiceImpl implements PermutationService {
         Logs logs = new Logs();
 
         User user = userRepository
-                .findById(permutationSaveDTO.getUserId())
+                .findByEmail(userEmail)
                 .orElseThrow(EntityNotFoundException::new);
 
         saveServer();

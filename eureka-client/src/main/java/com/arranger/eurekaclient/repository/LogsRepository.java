@@ -11,5 +11,5 @@ import java.util.Optional;
 @Repository
 public interface LogsRepository extends JpaRepository<Logs, String> {
     Logs getLogsByPermutationId(String permutationId);
-    Optional<List<Logs>> getLogsByUserId(String userId, Pageable pageable);
+    Optional<List<Logs>> getLogsByUserEmail(String userEmail, Pageable pageable);
 }
