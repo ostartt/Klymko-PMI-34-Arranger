@@ -3,23 +3,25 @@ package com.arranger.eurekaclient.service.impl;
 import com.arranger.eurekaclient.dto.LogsDTO;
 import com.arranger.eurekaclient.dto.PermutationDTO;
 import com.arranger.eurekaclient.dto.PermutationSaveDTO;
-import com.arranger.eurekaclient.entity.Logs;
-import com.arranger.eurekaclient.entity.Permutation;
-import com.arranger.eurekaclient.entity.PermutationStatus;
-import com.arranger.eurekaclient.entity.User;
+import com.arranger.eurekaclient.entity.*;
 import com.arranger.eurekaclient.mapper.LogsMapper;
 import com.arranger.eurekaclient.mapper.PermutationMapper;
 import com.arranger.eurekaclient.repository.LogsRepository;
 import com.arranger.eurekaclient.repository.PermutationRepository;
+import com.arranger.eurekaclient.repository.ServerRepository;
 import com.arranger.eurekaclient.repository.UserRepository;
 import com.arranger.eurekaclient.service.PermutationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
 
+import javax.persistence.Column;
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -38,7 +40,8 @@ public class PermutationServiceImpl implements PermutationService {
     private final LogsRepository logsRepository;
     private final LogsMapper logsMapper;
     private final UserRepository userRepository;
-    private static final AtomicInteger maxProcessNumber = new AtomicInteger(1);
+    private final ServerRepository serverRepository;
+    private static final AtomicInteger maxProcessNumber = new AtomicInteger(2);
     private static final AtomicInteger processCounter = new AtomicInteger(0);
     private static final String maxProcessesMsg = String.format("You have reached max process number %s," +
             " please wait until processes finish", maxProcessNumber);
@@ -50,12 +53,15 @@ public class PermutationServiceImpl implements PermutationService {
     public PermutationServiceImpl(PermutationRepository permutationRepository,
                                   PermutationMapper permutationMapper,
                                   LogsRepository logsRepository,
-                                  LogsMapper logsMapper, UserRepository userRepository) {
+                                  LogsMapper logsMapper,
+                                  UserRepository userRepository,
+                                  ServerRepository serverRepository) {
         this.permutationRepository = permutationRepository;
         this.permutationMapper = permutationMapper;
         this.logsRepository = logsRepository;
         this.logsMapper = logsMapper;
         this.userRepository = userRepository;
+        this.serverRepository = serverRepository;
     }
 
     @Override
@@ -101,9 +107,12 @@ public class PermutationServiceImpl implements PermutationService {
         permutation.setPermutationNumber(getNumberOfPermutations(permutationSaveDTO.getGivenString()));
 
         Logs logs = new Logs();
+
         User user = userRepository
                 .findById(permutationSaveDTO.getUserId())
                 .orElseThrow(EntityNotFoundException::new);
+
+        saveServer();
 
         logs.setUser(user);
         logs.setInstanceId(instanceId);
@@ -125,10 +134,13 @@ public class PermutationServiceImpl implements PermutationService {
 
                     logs.setShutDownTime(stop);
                     logs.setExecutionTime(executionTime);
-                    logs.setPermutationStatus(PermutationStatus.DONE); // TODO:
+                    logs.setPermutationStatus(PermutationStatus.DONE);
 
                     log.info("Decrementing");
                     processCounter.decrementAndGet();
+
+                     saveServer();
+
                     return logsMapper.entityToDto(logsRepository.save(logs));
                 });
     }
@@ -137,7 +149,7 @@ public class PermutationServiceImpl implements PermutationService {
     public void runPermutation(Permutation permutation, String logsId) {
         log.info("Running a single permutation number {}", processCounter);
 
-        permutation.setPermutations(permutationFinder(permutation.getGivenString(), logsId));
+        permutation.setPermutations(permutationFinder(permutation.getGivenString()));
         permutationMapper.entityToDto(permutation);
 
     }
@@ -151,13 +163,27 @@ public class PermutationServiceImpl implements PermutationService {
                 .orElseThrow(EntityNotFoundException::new));
     }
 
+    private void saveServer(){
+        log.info("Updating a server");
+
+        Integer availableTasks = maxProcessNumber.get() - processCounter.get();
+        String  loadPercent = ((processCounter.get() * 1.0 / maxProcessNumber.get()) * 100.0) + "%";
+
+        serverRepository.save(new Server(
+                instanceId,
+                maxProcessNumber.get(),
+                availableTasks,
+                processCounter.get(),
+                loadPercent
+        ));
+    }
     private Long getNumberOfPermutations(String givenString) {
         log.debug("Calling permutation number algorithm");
         return LongStream.rangeClosed(1, givenString.length())
                 .reduce(1, (long x, long y) -> x * y);
     }
 
-    public Set<String> permutationFinder(String givenString, String logsId) {
+    public Set<String> permutationFinder(String givenString) {
         log.debug("Calling permutation algorithm");
 
         Set<String> permutations = new HashSet<>();
@@ -172,7 +198,7 @@ public class PermutationServiceImpl implements PermutationService {
         char initial = givenString.charAt(0);
         String rest = givenString.substring(1);
 
-        Set<String> words = permutationFinder(rest, logsId);
+        Set<String> words = permutationFinder(rest);
 
         assert words != null;
         for (String newString : words) {
