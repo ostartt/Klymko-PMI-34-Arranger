@@ -72,8 +72,6 @@ public class PermutationServiceImpl implements PermutationService {
         log.info("Decrementing from cancel");
         processCounter.decrementAndGet();
 
-//        saveServer();
-
         return CompletableFuture.runAsync(() -> logsRepository
                 .findById(logsId)
                 .map(logs ->

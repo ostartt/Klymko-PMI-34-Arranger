@@ -28,7 +28,7 @@ public class ServerController {
     }
 
     @GetMapping()
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')") // TODO: remove user
+    @PreAuthorize("hasAuthority('ADMIN')") // TODO: remove user
     public ResponseEntity<List<ServerDTO>>
     getAllServers() {
 
