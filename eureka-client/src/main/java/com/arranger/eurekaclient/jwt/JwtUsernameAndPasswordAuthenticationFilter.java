@@ -82,7 +82,6 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
 
         AuthenticationResponseDTO authenticationResponseDTO = new AuthenticationResponseDTO(
 
-                user.getId(),
                 user.getFirstName(),
                 user.getLastName(),
                 user.getEmail(),

@@ -34,7 +34,7 @@ public class RegistrationServiceImpl implements RegistrationService {
             "Service: password %s must contain at least 8 characters (letters and numbers)";
 
     private final static String LOGIN_ROUTE = "<meta http-equiv=\"refresh\" content=\"0;" +
-            " url=https://arranger.herokuapp.com/login\" />";
+            " url=http://localhost:3000/sign-in\" />";
     private final UserService userService;
     private final ConfirmationTokenService confirmationTokenServiceImpl;
     private final EmailSenderService emailSender;
