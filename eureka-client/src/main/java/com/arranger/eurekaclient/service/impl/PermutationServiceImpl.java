@@ -44,7 +44,7 @@ public class PermutationServiceImpl implements PermutationService {
     private static final AtomicInteger maxProcessNumber = new AtomicInteger(2);
     private static final AtomicInteger processCounter = new AtomicInteger(0);
     private static final String maxProcessesMsg = String.format("You have reached max process number %s," +
-            " please wait until processes finish", maxProcessNumber);
+            " please wait until processes finish", maxProcessNumber.get() * 3);
 
     @Value("${eureka.instance.instance-id}")
     private String instanceId;

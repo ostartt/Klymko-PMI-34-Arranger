@@ -4,6 +4,7 @@ import com.arranger.eurekaclient.dto.UserDTO;
 import com.arranger.eurekaclient.entity.User;
 import com.arranger.eurekaclient.exception.EmailAlreadyTakenException;
 import com.arranger.eurekaclient.exception.EmailNotConfirmedException;
+import com.arranger.eurekaclient.exception.ResourcesExhaustedException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -55,6 +56,17 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
         apiValidationError.setRejectedValue(user.getEmail());
 
         apiError.setSubErrors(List.of(apiValidationError));
+
+        return buildResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(EmailNotConfirmedException.class)
+    protected ResponseEntity<Object> resourcesExhausted(
+            ResourcesExhaustedException ex) {
+
+        ApiError apiError = new ApiError(HttpStatus.PAYLOAD_TOO_LARGE);
+        apiError.setMessage(ex.getMessage());
+        apiError.setDebugMessage(ex.toString());
 
         return buildResponseEntity(apiError);
     }
