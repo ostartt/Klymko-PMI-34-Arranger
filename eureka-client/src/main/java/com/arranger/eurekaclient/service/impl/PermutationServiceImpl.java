@@ -4,6 +4,7 @@ import com.arranger.eurekaclient.dto.LogsDTO;
 import com.arranger.eurekaclient.dto.PermutationDTO;
 import com.arranger.eurekaclient.dto.PermutationSaveDTO;
 import com.arranger.eurekaclient.entity.*;
+import com.arranger.eurekaclient.exception.ResourcesExhaustedException;
 import com.arranger.eurekaclient.mapper.LogsMapper;
 import com.arranger.eurekaclient.mapper.PermutationMapper;
 import com.arranger.eurekaclient.repository.LogsRepository;
@@ -45,6 +46,7 @@ public class PermutationServiceImpl implements PermutationService {
     private static final AtomicInteger processCounter = new AtomicInteger(0);
     private static final String maxProcessesMsg = String.format("You have reached max process number %s," +
             " please wait until processes finish", maxProcessNumber.get() * 3);
+    private static final String maxLength = "String length too long (max 10 symbols)";
 
     @Value("${eureka.instance.instance-id}")
     private String instanceId;
@@ -95,7 +97,12 @@ public class PermutationServiceImpl implements PermutationService {
 
         if (processCounter.get() >= maxProcessNumber.get()) {
             log.error(maxProcessesMsg);
-            throw new ResourceAccessException(maxProcessesMsg);
+            throw new ResourcesExhaustedException(maxProcessesMsg);
+        }
+
+        if(permutationSaveDTO.getGivenString().length() > 10) { // TODO: remove?
+            log.error(maxLength);
+            throw new ResourcesExhaustedException(maxLength);
         }
 
         processCounter.incrementAndGet();

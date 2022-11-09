@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PermutationConstraint {
-    String message() default "The length of the string must bu up to 10 symbols";
+    String message() default "String length too long(max 10 symbols)";
 
     Class<?>[] groups() default {};
 

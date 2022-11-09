@@ -1,6 +1,5 @@
 package com.arranger.eurekaclient.exception;
 
-import com.arranger.eurekaclient.entity.User;
 import lombok.Getter;
 import lombok.Setter;
 

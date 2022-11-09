@@ -60,7 +60,7 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponseEntity(apiError);
     }
 
-    @ExceptionHandler(EmailNotConfirmedException.class)
+    @ExceptionHandler(ResourcesExhaustedException.class)
     protected ResponseEntity<Object> resourcesExhausted(
             ResourcesExhaustedException ex) {
 
