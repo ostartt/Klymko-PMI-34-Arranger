@@ -1,16 +1,17 @@
 package com.arranger.eurekaclient.controller;
 
+import com.arranger.eurekaclient.dto.LogsAndNumberDTO;
 import com.arranger.eurekaclient.dto.LogsDTO;
 import com.arranger.eurekaclient.service.LogsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import javax.validation.constraints.NotNull;
+import java.security.Principal;
 
 
 @Slf4j
@@ -47,21 +48,23 @@ public class LogsController {
 
     @GetMapping
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public ResponseEntity<List<LogsDTO>>
-    getAllLogs(Pageable pageable) {
+    public ResponseEntity<LogsAndNumberDTO>
+    getAllLogs() {
 
         log.info("Getting all logs");
         return ResponseEntity.status(HttpStatus.OK).body(
-                logsService.getAllLogs(pageable));
+                logsService.getAllLogs());
     }
 
-    @GetMapping("/{id}/users")
+    @GetMapping("/users")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public ResponseEntity<List<LogsDTO>>
-    getAllLogsByUserId(@PathVariable("id") String userId, Pageable pageable) {
+    public ResponseEntity<LogsAndNumberDTO>
+    getAllLogsByUserEmail(@NotNull Principal principal,
+                       @RequestParam("page") Integer page,
+                       @RequestParam("amount") Integer amount) {
 
-        log.info("Getting all logs by user id {}", userId);
+        log.info("Getting all logs by user email {}", principal.getName());
         return ResponseEntity.status(HttpStatus.OK).body(
-                logsService.getAllLogsByUserId(pageable, userId));
+                logsService.getAllLogsByUserEmail(page, amount, principal.getName()));
     }
 }

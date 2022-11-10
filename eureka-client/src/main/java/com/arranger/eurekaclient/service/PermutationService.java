@@ -15,5 +15,6 @@ public interface PermutationService {
 
     CompletableFuture<Void> cancelTask(String permutationId);
 
-    CompletableFuture<LogsDTO> runAndLogPermutation(PermutationSaveDTO permutationSaveDTO);
+     CompletableFuture<LogsDTO> runAndLogPermutation(PermutationSaveDTO permutationSaveDTO,
+                                                           String userId);
 }

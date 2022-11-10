@@ -1,5 +1,6 @@
 package com.arranger.eurekaclient.service.impl;
 
+import com.arranger.eurekaclient.dto.LogsAndNumberDTO;
 import com.arranger.eurekaclient.dto.LogsDTO;
 import com.arranger.eurekaclient.entity.Logs;
 import com.arranger.eurekaclient.mapper.LogsMapper;
@@ -38,30 +39,36 @@ public class LogsServiceImpl implements LogsService {
     }
 
     @Override
-    public List<LogsDTO> getAllLogs(Pageable pageable){
+    public LogsAndNumberDTO getAllLogs() {
         log.info("Getting all logs");
 
-        Page<Logs> logsPage = logsRepository
-                .findAll(PageRequest.of(0,6));
+        List<Logs> logs = logsRepository
+                .findAll();
 
-        return logsPage
+        Long logsNumber = logsRepository.count();
+
+        List<LogsDTO> logsDTO = logs
                 .stream()
-                .map(logsMapper::entityToDto)
-                .collect(Collectors.toList());
+                .map(logsMapper::entityToDto).toList();
+
+        return new LogsAndNumberDTO(logsDTO, logsNumber);
     }
 
     @Override
-    public List<LogsDTO> getAllLogsByUserId(Pageable pageable, String userId){
-        log.info("Getting all logs by user id {}", userId);
+    public LogsAndNumberDTO getAllLogsByUserEmail(Integer page, Integer amount, String userEmail) {
+        log.info("Getting all logs by user id {}", userEmail);
 
         List<Logs> logs = logsRepository
-                .getLogsByUserId(userId, PageRequest.of(0,6))
+                .getLogsByUserEmail(userEmail, PageRequest.of(page, amount))
                 .orElseThrow(EntityNotFoundException::new);
 
-        return logs
+        Long logsNumber = logsRepository.count();
+
+        List<LogsDTO> logsDTO = logs
                 .stream()
-                .map(logsMapper::entityToDto)
-                .collect(Collectors.toList());
+                .map(logsMapper::entityToDto).toList();
+
+        return new LogsAndNumberDTO(logsDTO, logsNumber);
     }
 
     @Override

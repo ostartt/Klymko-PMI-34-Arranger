@@ -4,6 +4,7 @@ import com.arranger.eurekaclient.dto.LogsDTO;
 import com.arranger.eurekaclient.dto.PermutationDTO;
 import com.arranger.eurekaclient.dto.PermutationSaveDTO;
 import com.arranger.eurekaclient.entity.*;
+import com.arranger.eurekaclient.exception.ResourcesExhaustedException;
 import com.arranger.eurekaclient.mapper.LogsMapper;
 import com.arranger.eurekaclient.mapper.PermutationMapper;
 import com.arranger.eurekaclient.repository.LogsRepository;
@@ -44,7 +45,8 @@ public class PermutationServiceImpl implements PermutationService {
     private static final AtomicInteger maxProcessNumber = new AtomicInteger(2);
     private static final AtomicInteger processCounter = new AtomicInteger(0);
     private static final String maxProcessesMsg = String.format("You have reached max process number %s," +
-            " please wait until processes finish", maxProcessNumber);
+            " please wait until processes finish", maxProcessNumber.get() * 3);
+    private static final String maxLength = "String length too long (max 10 symbols)";
 
     @Value("${eureka.instance.instance-id}")
     private String instanceId;
@@ -69,9 +71,6 @@ public class PermutationServiceImpl implements PermutationService {
     public CompletableFuture<Void> cancelTask(String logsId) {
         log.info("Cancelling a task with id {}", logsId);
 
-        log.info("Decrementing from cancel");
-        processCounter.decrementAndGet();
-
         return CompletableFuture.runAsync(() -> logsRepository
                 .findById(logsId)
                 .map(logs ->
@@ -90,11 +89,12 @@ public class PermutationServiceImpl implements PermutationService {
 
     @Override
     @Async
-    public CompletableFuture<LogsDTO> runAndLogPermutation(PermutationSaveDTO permutationSaveDTO) {
+    public CompletableFuture<LogsDTO> runAndLogPermutation(PermutationSaveDTO permutationSaveDTO,
+                                                           String userEmail) {
 
         if (processCounter.get() >= maxProcessNumber.get()) {
             log.error(maxProcessesMsg);
-            throw new ResourceAccessException(maxProcessesMsg);
+            throw new ResourcesExhaustedException(maxProcessesMsg);
         }
 
         processCounter.incrementAndGet();
@@ -109,7 +109,7 @@ public class PermutationServiceImpl implements PermutationService {
         Logs logs = new Logs();
 
         User user = userRepository
-                .findById(permutationSaveDTO.getUserId())
+                .findByEmail(userEmail)
                 .orElseThrow(EntityNotFoundException::new);
 
         saveServer();

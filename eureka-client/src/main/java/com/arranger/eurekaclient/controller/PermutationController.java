@@ -11,6 +11,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.security.Principal;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
@@ -27,12 +29,12 @@ public class PermutationController {
     @PostMapping
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<CompletableFuture<LogsDTO>>
-    runAndLogPermutation(@RequestBody @Valid PermutationSaveDTO permutation) throws InterruptedException {
+    runAndLogPermutation(@RequestBody @Valid PermutationSaveDTO permutation,
+                         @NotNull Principal principal) {
         log.info("Running a permutation");
 
-//        CompletableFuture.supplyAsync(() -> logsRepository.save(new Logs()));
         return ResponseEntity.status(HttpStatus.OK).body(
-                permutationService.runAndLogPermutation(permutation));
+                permutationService.runAndLogPermutation(permutation, principal.getName()));
     }
 
     @GetMapping("/{id}")

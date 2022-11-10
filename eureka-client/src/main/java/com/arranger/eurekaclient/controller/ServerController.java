@@ -17,7 +17,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/servers")
+@RequestMapping("/api/v1/admin/servers")
 public class ServerController {
 
     private final ServerService serverService;
@@ -28,7 +28,7 @@ public class ServerController {
     }
 
     @GetMapping()
-    @PreAuthorize("hasAuthority('ADMIN')") // TODO: remove user
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<ServerDTO>>
     getAllServers() {
 
