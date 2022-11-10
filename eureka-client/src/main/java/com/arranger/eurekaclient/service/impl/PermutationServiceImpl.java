@@ -71,9 +71,6 @@ public class PermutationServiceImpl implements PermutationService {
     public CompletableFuture<Void> cancelTask(String logsId) {
         log.info("Cancelling a task with id {}", logsId);
 
-        log.info("Decrementing from cancel");
-        processCounter.decrementAndGet();
-
         return CompletableFuture.runAsync(() -> logsRepository
                 .findById(logsId)
                 .map(logs ->

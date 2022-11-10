@@ -101,9 +101,6 @@ public class RegistrationServiceImpl implements RegistrationService {
     }
 
     private String buildEmail(String link) throws IOException {
-        String date = "\n" + LocalDateTime.now().getMonth().getDisplayName(TextStyle.FULL, Locale.US)
-                + " " + LocalDateTime.now().getDayOfMonth()
-                + ", " + LocalDateTime.now().getYear();
 
         StringBuilder email = new StringBuilder(Files
                 .asCharSource(new File("eureka-client/src/main/resources/template/email.html"), StandardCharsets.UTF_8)
