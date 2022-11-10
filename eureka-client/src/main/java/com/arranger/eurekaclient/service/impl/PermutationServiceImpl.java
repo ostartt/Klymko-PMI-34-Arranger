@@ -97,11 +97,6 @@ public class PermutationServiceImpl implements PermutationService {
             throw new ResourcesExhaustedException(maxProcessesMsg);
         }
 
-        if(permutationSaveDTO.getGivenString().length() > 10) { // TODO: remove?
-            log.error(maxLength);
-            throw new ResourcesExhaustedException(maxLength);
-        }
-
         processCounter.incrementAndGet();
         log.info("Incrementing");
 
