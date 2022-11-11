@@ -13,6 +13,6 @@ public class PermutationValidator implements ConstraintValidator<PermutationCons
 
     @Override
     public boolean isValid(String nameField, ConstraintValidatorContext constraintValidatorContext) {
-        return nameField.matches("^.{1,10}$");
+        return nameField.matches("^.{3,10}$");
     }
 }
