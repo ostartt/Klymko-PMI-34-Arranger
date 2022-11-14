@@ -103,7 +103,8 @@ public class RegistrationServiceImpl implements RegistrationService {
     private String buildEmail(String link) throws IOException {
 
         StringBuilder email = new StringBuilder(Files
-                .asCharSource(new File("eureka-client/src/main/resources/template/email.html"), StandardCharsets.UTF_8)
+                .asCharSource(new File("eureka-client/src/main/resources/template/email.html"),
+                        StandardCharsets.UTF_8)
                 .read());
 
         email

@@ -24,25 +24,25 @@ public class Logs {
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
     private String id;
 
-    @Column(name = "start_up_time", nullable = true)
+    @Column(name = "start_up_time")
     private LocalDateTime startUpTime;
 
-    @Column(name = "shut_down_time", nullable = true)
+    @Column(name = "shut_down_time")
     private LocalDateTime shutDownTime;
 
-    @Column(name = "execution_time", nullable = true)
+    @Column(name = "execution_time")
     private Long executionTime;
 
-    @Column(name = "instance_id", nullable = true)
+    @Column(name = "instance_id")
     private String instanceId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = true)
+    @Column(name = "status")
     private PermutationStatus permutationStatus = PermutationStatus.RAW;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL) // TODO
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "permutation_id", nullable = true, foreignKey = @ForeignKey(name = "fk_logs_permutation"))
+    @JoinColumn(name = "permutation_id", foreignKey = @ForeignKey(name = "fk_logs_permutation"))
     private Permutation permutation;
 
     @ManyToOne(fetch = FetchType.LAZY)
