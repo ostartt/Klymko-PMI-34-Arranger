@@ -72,17 +72,17 @@ public class PermutationServiceImpl implements PermutationService {
         log.info("Cancelling a task with id {}", logsId);
 
         return CompletableFuture.runAsync(() -> logsRepository
-                .findById(logsId)
-                .map(logs ->
-                {
-                    logs.setPermutationStatus(PermutationStatus.INTERRUPTED);
-                    return logsRepository.save(logs);
+                        .findById(logsId)
+                        .map(logs ->
+                        {
+                            logs.setPermutationStatus(PermutationStatus.INTERRUPTED);
+                            return logsRepository.save(logs);
 
-                })
-                .orElseThrow(EntityNotFoundException::new))
+                        })
+                        .orElseThrow(EntityNotFoundException::new))
                 .thenApply(action -> {
-                        log.info("Deleting logs");
-                        logsRepository.deleteById(logsId);
+                    log.info("Deleting logs");
+                    logsRepository.deleteById(logsId);
                     return action;
                 });
     }
@@ -119,7 +119,7 @@ public class PermutationServiceImpl implements PermutationService {
         logs.setPermutation(permutation);
 
         logsRepository.save(logs);
-        permutationRepository.save(permutation);
+        permutationRepository.save(permutation); // TODO: first stage
 
         log.info("Logging a permutation");
 
@@ -128,21 +128,21 @@ public class PermutationServiceImpl implements PermutationService {
         logs.setStartUpTime(start);
 
         return CompletableFuture.supplyAsync(() -> {
-                    logsMapper.entityToDto(logsRepository.save(logs));
-                    LocalDateTime stop = LocalDateTime.now();
-                    Long executionTime = ChronoUnit.SECONDS.between(start, stop);
+            logsMapper.entityToDto(logsRepository.save(logs));
+            LocalDateTime stop = LocalDateTime.now();
+            Long executionTime = ChronoUnit.SECONDS.between(start, stop);
 
-                    logs.setShutDownTime(stop);
-                    logs.setExecutionTime(executionTime);
-                    logs.setPermutationStatus(PermutationStatus.DONE);
+            logs.setShutDownTime(stop);
+            logs.setExecutionTime(executionTime);
+            logs.setPermutationStatus(PermutationStatus.DONE);
 
-                    log.info("Decrementing");
-                    processCounter.decrementAndGet();
+            log.info("Decrementing");
+            processCounter.decrementAndGet();
 
-                     saveServer();
+            saveServer();
 
-                    return logsMapper.entityToDto(logsRepository.save(logs));
-                });
+            return logsMapper.entityToDto(logsRepository.save(logs)); // TODO: second stage
+        });
     }
 
     @Override
@@ -163,11 +163,11 @@ public class PermutationServiceImpl implements PermutationService {
                 .orElseThrow(EntityNotFoundException::new));
     }
 
-    private void saveServer(){
+    private void saveServer() {
         log.info("Updating a server");
 
         Integer availableTasks = maxProcessNumber.get() - processCounter.get();
-        String  loadPercent = ((processCounter.get() * 1.0 / maxProcessNumber.get()) * 100.0) + "%";
+        String loadPercent = ((processCounter.get() * 1.0 / maxProcessNumber.get()) * 100.0) + "%";
 
         serverRepository.save(new Server(
                 instanceId,
@@ -177,6 +177,7 @@ public class PermutationServiceImpl implements PermutationService {
                 loadPercent
         ));
     }
+
     private Long getNumberOfPermutations(String givenString) {
         log.debug("Calling permutation number algorithm");
         return LongStream.rangeClosed(1, givenString.length())

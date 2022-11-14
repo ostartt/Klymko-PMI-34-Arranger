@@ -25,7 +25,7 @@ public class EmailServiceImpl implements EmailSenderService {
     @Async
     public void send(String to, String email) throws SendFailedException {
         try {
-            log.info(String.format("Service: sending email message to %s", to));
+            log.info("Sending email message to {}", to);
             MimeMessage mimeMessage = mailSender.createMimeMessage();
 
             MimeMessageHelper helper =

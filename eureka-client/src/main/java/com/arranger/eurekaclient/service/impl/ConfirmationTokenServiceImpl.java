@@ -19,19 +19,19 @@ public class ConfirmationTokenServiceImpl implements ConfirmationTokenService {
 
     @Override
     public void saveConfirmationToken(ConfirmationToken token) {
-        log.info(String.format("Service: saving token %s", token.getToken()));
+        log.info("Saving token {}", token.getToken());
         confirmationTokenRepository.save(token);
     }
 
     @Override
     public Optional<ConfirmationToken> getToken(String token) {
-        log.debug(String.format("Service: getting token %s", token));
+        log.debug("Getting token {}", token);
         return confirmationTokenRepository.findByToken(token);
     }
 
     @Override
     public void setConfirmedAt(String token) {
-        log.debug(String.format("Service: confirming token %s", token));
+        log.debug("Confirming token {}", token);
         confirmationTokenRepository.updateConfirmedAt(
                 token, LocalDateTime.now());
     }
