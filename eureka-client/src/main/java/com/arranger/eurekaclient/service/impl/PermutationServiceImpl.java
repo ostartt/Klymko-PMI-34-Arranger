@@ -15,14 +15,9 @@ import com.arranger.eurekaclient.service.PermutationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.ResourceAccessException;
 
-import javax.persistence.Column;
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -88,9 +83,8 @@ public class PermutationServiceImpl implements PermutationService {
     }
 
     @Override
-    @Async
-    public CompletableFuture<LogsDTO> runAndLogPermutation(PermutationSaveDTO permutationSaveDTO,
-                                                           String userEmail) {
+    public LogsDTO runFirstStage(PermutationSaveDTO permutationSaveDTO,
+                                 String userEmail) {
 
         if (processCounter.get() >= maxProcessNumber.get()) {
             log.error(maxProcessesMsg);
@@ -119,18 +113,24 @@ public class PermutationServiceImpl implements PermutationService {
         logs.setPermutation(permutation);
 
         logsRepository.save(logs);
-        permutationRepository.save(permutation); // TODO: first stage
+        permutationRepository.save(permutation);
 
         log.info("Logging a permutation");
 
-        runPermutation(permutation, logs.getId());
-
         logs.setStartUpTime(start);
+        CompletableFuture.runAsync(() -> runSecondStage(logs));
+        return logsMapper.entityToDto(logsRepository.save(logs));
+    }
 
-        return CompletableFuture.supplyAsync(() -> {
+    @Async
+    public void runSecondStage(Logs logs) {
+
+        runPermutation(logs.getPermutation(), logs.getId());
+
+        CompletableFuture.supplyAsync(() -> {
             logsMapper.entityToDto(logsRepository.save(logs));
             LocalDateTime stop = LocalDateTime.now();
-            Long executionTime = ChronoUnit.SECONDS.between(start, stop);
+            Long executionTime = ChronoUnit.SECONDS.between(logs.getStartUpTime(), stop);
 
             logs.setShutDownTime(stop);
             logs.setExecutionTime(executionTime);

@@ -28,13 +28,13 @@ public class PermutationController {
 
     @PostMapping
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public ResponseEntity<CompletableFuture<LogsDTO>>
+    public ResponseEntity<LogsDTO>
     runAndLogPermutation(@RequestBody @Valid PermutationSaveDTO permutation,
                          @NotNull Principal principal) {
         log.info("Running a permutation");
 
         return ResponseEntity.status(HttpStatus.OK).body(
-                permutationService.runAndLogPermutation(permutation, principal.getName()));
+                permutationService.runFirstStage(permutation, principal.getName()));
     }
 
     @GetMapping("/{id}")
