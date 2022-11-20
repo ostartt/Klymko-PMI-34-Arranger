@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
@@ -37,11 +38,10 @@ public class PermutationServiceImpl implements PermutationService {
     private final LogsMapper logsMapper;
     private final UserRepository userRepository;
     private final ServerRepository serverRepository;
-    private static final AtomicInteger maxProcessNumber = new AtomicInteger(2);
+    private static final AtomicInteger maxProcessNumber = new AtomicInteger(3);
     private static final AtomicInteger processCounter = new AtomicInteger(0);
     private static final String maxProcessesMsg = String.format("You have reached max process number %s," +
             " please wait until processes finish", maxProcessNumber.get() * 3);
-    private static final String maxLength = "String length too long (max 10 symbols)";
 
     @Value("${eureka.instance.instance-id}")
     private String instanceId;
@@ -62,24 +62,28 @@ public class PermutationServiceImpl implements PermutationService {
     }
 
     @Override
-    @Async
-    public CompletableFuture<Void> cancelTask(String logsId) {
+    public void cancelTask(String logsId) {
         log.info("Cancelling a task with id {}", logsId);
 
-        return CompletableFuture.runAsync(() -> logsRepository
-                        .findById(logsId)
-                        .map(logs ->
-                        {
-                            logs.setPermutationStatus(PermutationStatus.INTERRUPTED);
-                            return logsRepository.save(logs);
+        logsRepository
+                .findById(logsId)
+                .map(logs ->
+                {
+                    logs.setPermutationStatus(PermutationStatus.INTERRUPTED);
+                    return logsRepository.saveAndFlush(logs);
 
-                        })
-                        .orElseThrow(EntityNotFoundException::new))
-                .thenApply(action -> {
-                    log.info("Deleting logs");
-                    logsRepository.deleteById(logsId);
-                    return action;
-                });
+                })
+                .orElseThrow(EntityNotFoundException::new);
+
+        CompletableFuture.runAsync(() -> deleteLogs(logsId));
+    }
+
+    @Async
+    public void deleteLogs(String logsId) {
+        log.info("Deleting logs");
+        logsRepository.flush();
+        logsRepository.deleteById(logsId);
+
     }
 
     @Override
@@ -125,7 +129,7 @@ public class PermutationServiceImpl implements PermutationService {
     @Async
     public void runSecondStage(Logs logs) {
 
-        runPermutation(logs.getPermutation(), logs.getId());
+        runPermutation(logs.getPermutation(), logs);
 
         CompletableFuture.supplyAsync(() -> {
             logsMapper.entityToDto(logsRepository.save(logs));
@@ -146,7 +150,7 @@ public class PermutationServiceImpl implements PermutationService {
     }
 
     @Override
-    public void runPermutation(Permutation permutation, String logsId) {
+    public void runPermutation(Permutation permutation, Logs logs) {
         log.info("Running a single permutation number {}", processCounter);
 
         permutation.setPermutations(permutationFinder(permutation.getGivenString()));
@@ -167,7 +171,7 @@ public class PermutationServiceImpl implements PermutationService {
         log.info("Updating a server");
 
         Integer availableTasks = maxProcessNumber.get() - processCounter.get();
-        String loadPercent = ((processCounter.get() * 1.0 / maxProcessNumber.get()) * 100.0) + "%";
+        String loadPercent = String.format("%.2f", ((processCounter.get() * 1.0 / maxProcessNumber.get()) * 100.0)) + "%";
 
         serverRepository.save(new Server(
                 instanceId,
