@@ -5,5 +5,5 @@ import com.arranger.eurekaclient.dto.ServerDTO;
 import java.util.List;
 
 public interface ServerService {
-    public List<ServerDTO> getAllServers();
+    List<ServerDTO> getAllServers();
 }
